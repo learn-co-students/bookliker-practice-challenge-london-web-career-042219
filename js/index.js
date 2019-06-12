@@ -17,12 +17,14 @@ function getBooks() {
 
 }
 
+// Loop thru each book, rendering each one
 function renderBooks( booksObj ) {
 
     booksObj.forEach( function(bookObj) { renderBook(bookObj) } );
 
 }
 
+// render an individual book
 function renderBook( bookObj ) {
 
     let bookItem = document.createElement('LI')
@@ -32,6 +34,7 @@ function renderBook( bookObj ) {
 
 }
 
+// Render the detail, when a book is clicked
 function renderBookDetail( event, bookObj ) {
 
     BOOK_SHOW_NODE.innerHTML=""
@@ -54,30 +57,34 @@ function renderBookDetail( event, bookObj ) {
 
 }
 
+// Loop thru each user, then render each one
 function renderUsers( bookUserDiv, usersObj ) {
     bookUserDiv.innerHTML="";
     usersObj.forEach( function(userObj) { renderUser( bookUserDiv, userObj ) } );
 }
 
+// Render each user
 function renderUser( bookUserDiv, userObj ) {
     let userName=document.createElement('P');
     userName.innerText=userObj.username;
     bookUserDiv.append( userName );
 }
 
+// Add the user or remove, if already read, when the read book button is clicked
 function readBook( event, bookObj, bookUserDiv ) {
     let thisUser = {"id":1, "username":"pouros"};
 
     if (bookObj.users.find( function(user) { return user.username==="pouros"} )) {
-        // Remove the user
+        // Remove the user from the object
         bookObj.users = bookObj.users.filter(user => {
                     return user.username !=="pouros"
                 })
     } else { 
-// Add the user
+    // Add the user into the users object
         bookObj.users.push( thisUser );
     }
 
+    // Set the fetch headers
     configObj = {
         method:"PATCH",
         headers: {
@@ -87,11 +94,14 @@ function readBook( event, bookObj, bookUserDiv ) {
             body: JSON.stringify( bookObj )
         };
 
+    // Do the update, catching any error into console.log
     fetch(`${BOOK_URL}/${bookObj.id}`, configObj)
     .catch(console.log)
-    
+
+    // Re-render all of the users, which will deal with one added, or one removed
     renderUsers( bookUserDiv, bookObj.users )
 
 }
 
+// Run the main function, after the DOM has loaded
 document.body.onload = getBooks()
